@@ -1,0 +1,129 @@
+function! s:WingmanUseCtor(type)
+  call CocAction('codeAction', a:type, ['refactor.wingman.useConstructor'])
+  call <SID>GotoNextHole()
+endfunction
+
+
+" --------------------------------------------
+" nCoC setup
+" --------------------------------------------
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+":h completion-example
+inoremap <expr> <cr> coc#pum#visible() ? coc#_select_confirm() : "\<CR>"
+
+" Tab navigation
+inoremap <expr> <Tab> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
+inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"
+
+"inoremap <silent><expr> <TAB>
+"  \ coc#pum#visible() ? coc#_select_confirm() :
+"  \ coc#expandableOrJumpable() ?
+"  \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+"  \ CheckBackSpace() ? "\<TAB>" :
+"  \ coc#refresh()
+
+function! CheckBackSpace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+let g:coc_snippet_next = '<tab>'
+
+" Use <c-s> to trigger completion.
+inoremap <silent><expr> <c-s> coc#refresh()
+
+" gd - go to definition of word under cursor
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+
+" gi - go to implementation
+nmap <silent> gi <Plug>(coc-implementation)
+
+" gr - find references
+nmap <silent> gr <Plug>(coc-references)
+
+" gh - get hint on whatever's under the cursor
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent> gh :call <SID>show_documentation()<CR>
+
+" autocmd FileType haskell nmap <silent> gm :silent update <bar> HsimportModule<CR>
+" autocmd FileType haskell nmap <silent> gc :silent update <bar> HsimportSymbol<CR>
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocActionAsync('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+nnoremap <silent> <leader>co  :<C-u>CocList outline<cr>
+nnoremap <silent> <leader>cs  :<C-u>CocList -I symbols<cr>
+
+nnoremap <silent> <leader>cn  :call CocAction('diagnosticNext')<CR>
+nnoremap <silent> <leader>cp  :call CocAction('diagnosticPrevious')<CR>
+
+" List errors
+nnoremap <silent> <leader>cl  :<C-u>CocList locationlist<cr>
+
+" list commands available in tsserver (and others)
+nnoremap <silent> <leader>cc  :<C-u>CocList commands<cr>
+
+" restart when tsserver gets wonky
+nnoremap <silent> <leader>cR  :<C-u>CocRestart<CR>
+
+" manage extensions
+nnoremap <silent> <leader>cx  :<C-u>CocList extensions<cr>
+
+" rename the current word in the cursor
+nmap <leader>cr  <Plug>(coc-rename)
+nmap <leader>cf  <Plug>(coc-format-selected)
+vmap <leader>cf  <Plug>(coc-format-selected)
+
+" run code actions
+vmap <leader>ca  <Plug>(coc-codeaction-selected)
+nmap <leader>ca  <Plug>(coc-codeaction-selected)
+
+funct! DiffTwoTexts(text1, text2)
+  new
+  put =a:text1
+  normal ggdd
+  diffthis
+  new
+  put =a:text2
+  normal ggdd
+  diffthis
+endfunct
+
+funct! DiffTwoLines(line1, line2)
+  let text1 = getline(a:line1)
+  let text2 = getline(a:line2)
+  call DiffTwoTexts(text1, text2)
+endfunct
+
+funct! GallFunction(re)
+  cexpr []
+  execute 'silent! noautocmd bufdo vimgrepadd /' . a:re . '/j %'
+  cw
+endfunct
+
+command! -nargs=1 Gall call GallFunction(<q-args>)
+
+" let g:clipboard = {
+"       \   'name': 'myClipboard',
+"       \   'copy': {
+"       \      '+': ['tmux', 'load-buffer', '-'],
+"       \      '*': ['tmux', 'load-buffer', '-'],
+"       \    },
+"       \   'paste': {
+"       \      '+': ['tmux', 'save-buffer', '-'],
+"       \      '*': ['tmux', 'save-buffer', '-'],
+"       \   },
+"       \   'cache_enabled': 1,
+"       \ }
+"
+source ~/.config/nvim/lua/mymodule.lua

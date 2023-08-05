@@ -1,0 +1,121 @@
+{
+  "diagnostic.displayByAle": false,
+  "languageserver": {
+    "haskell": {
+      "command": "haskell-language-server-wrapper",
+      "args": ["--lsp","-d","--logfile","/tmp/hls.log"],
+      "rootPatterns": ["*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml"],
+      "filetypes": ["hs", "lhs", "haskell", "lhaskell"],
+      "initializationOptions": {
+        "languageServerHaskell": {
+          "hlintOn": true,
+          "maxNumberOfProblems": 10,
+          "completionSnippetsOn": true
+        },
+        "plugin": {
+          "tactics": {
+            "globalOn": false,
+            "hoverOn": true,
+            "codeLensOn": true,
+            "codeActionsOn": true,
+            "config": {
+              "hole_severity": null,
+              "max_use_ctor_actions": 5,
+              "timeout_duration": 2,
+              "auto_gas": 3,
+              "proofstate_styling": true
+            }
+          },
+          "ghcide-code-actions-bindings": {
+            "globalOn": true
+          },
+          "eval": {
+            "globalOn": true
+          },
+          "ghcide-code-actions-fill-holes": {
+            "globalOn": false
+          },
+          "ghcide-type-lenses": {
+            "globalOn": true,
+            "config": {
+              "mode": "diagnostics"
+            }
+          },
+          "importLens": {
+            "codeLensOn": true,
+            "codeActionsOn": true
+          },
+          "ghcide-hover-and-symbols": {
+            "globalOn": true,
+            "symbolsOn": true,
+            "hoverOn": true
+          },
+          "ghcide-code-actions-imports-exports": {
+            "globalOn": true
+          },
+          "retrie": {
+            "globalOn": true
+          },
+          "class": {
+            "globalOn": true
+          },
+          "qualifyImportedNames": {
+            "globalOn": true
+          },
+          "hlint": {
+            "globalOn": true,
+            "codeActionsOn": true,
+            "config": {
+                "flags": []
+            },
+            "diagnosticsOn": true
+          },
+          "moduleName": {
+            "globalOn": true
+          },
+          "alternateNumberFormat": {
+            "globalOn": true
+          },
+          "splice": {
+            "globalOn": true
+          },
+          "ghcide-code-actions-type-signatures": {
+            "globalOn": true
+          },
+          "pragmas": {
+            "globalOn": true,
+            "completionOn": true,
+            "codeActionsOn": true
+          },
+          "ghcide-completions": {
+            "globalOn": true,
+            "config": {
+              "autoExtendOn": true,
+              "snippetsOn": true
+            }
+          },
+          "refineImports": {
+            "globalOn": true,
+            "codeLensOn": true,
+            "codeActionsOn": true
+          },
+          "callHierarchy": {
+            "globalOn": true
+          },
+          "haddockComments": {
+            "globalOn": true
+          }
+        }
+      }
+    },
+    "solidity": {
+      "command": "solidity-language-server",
+      "args": ["--stdio"],
+      "filetypes": ["solidity"]
+    }
+  }
+}
+
+
+
+
