@@ -32,7 +32,7 @@ vim.opt.showbreak = "↪ "
 vim.opt.termguicolors = true
 -- Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 -- delays and poor user experience.
-vim.opt.updatetime = 10000
+vim.opt.updatetime = 100
 -- Don't pass messages to |ins-completion-menu|.
 vim.opt.shortmess:append({ c = true })
 -- Always show the signcolumn
@@ -84,7 +84,21 @@ require("lazy").setup({
   { "shellRaining/hlchunk.nvim",
     event = { "UIEnter" },
     config = function()
-      require("hlchunk").setup({})
+      require("hlchunk").setup({
+        indent = {
+            chars = { "│", "¦", "┆", "┊", }, -- more code can be found in https://unicodeplus.com/
+
+            style = {
+                "#150040",
+            },
+        },
+        blank = {
+            enable = false,
+            style = {
+                "#6B0099",
+            },
+        }
+      })
     end
   },
   -- 'Shougo/vimproc.vim', { 'do': 'make' } "async execution
@@ -113,7 +127,7 @@ require("lazy").setup({
           left = {
             { "mode", "paste" },
             { "readonly", "filename", "modified" },
-            { "gitbranch", "cocstatus" },
+            { "gitbranch", "gitstatus", "cocstatus" },
           },
           right = {
             { "lineinfo" },
@@ -121,13 +135,10 @@ require("lazy").setup({
             { "filetype" },
           },
         },
-        component = {
-          gitbranch = "%{fugitive#head()}",
-          cocstatus = "%{coc#status()}",
-        },
         component_function = {
-          gitbranch = "fugitive#head",
-          cocstatus = "coc#status",
+          gitbranch = 'VimGitBranch',
+          gitstatus = 'GitStatus',
+          cocstatus = 'coc#status',
         },
         component_expand = {
           filetype = "lightline#filetype",
@@ -167,8 +178,41 @@ require("lazy").setup({
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup {
-          ensure_installed = { "c", "lua", "rust" },
-          highlight = { enable = true, }
+        highlight = { enable = true },
+        indent = { enable = true },
+        ensure_installed = {
+          "bash",
+          "c",
+          "haskell",
+          "html",
+          "java",
+          "javascript",
+          "jsdoc",
+          "json",
+          "lua",
+          "luadoc",
+          "luap",
+          "markdown",
+          "markdown_inline",
+          "python",
+          "query",
+          "regex",
+          "rust",
+          "tsx",
+          "typescript",
+          "vim",
+          "vimdoc",
+          "yaml",
+        },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = "<C-space>",
+            node_incremental = "<C-space>",
+            scope_incremental = false,
+            node_decremental = "<bs>",
+          },
+        },
       }
     end
   },
@@ -176,6 +220,21 @@ require("lazy").setup({
   "lambdalisue/suda.vim",
   "jeffkreeftmeijer/vim-numbertoggle",
   "airblade/vim-gitgutter",
+  "itchyny/vim-gitbranch",
 })
+
+--[[ function to add  to branch display --]]
+function _G.gitBranch()
+  return " " .. vim.fn["gitbranch#name"]()
+end
+
+--[[ Current kludge for gitBranch() --]]
+vim.api.nvim_exec(
+[[
+function! g:VimGitBranch()
+  return " " .. gitbranch#name()
+endfunction
+]],
+true)
 
 vim.api.nvim_command('source ~/.config/nvim/vimrc')
