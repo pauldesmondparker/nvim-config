@@ -6,6 +6,7 @@
     "border": true,
     "rounded": true
   },
+  "lua.enable": false,
   "[prisma]": {
     "coc.preferences.formatOnSave": true
   },
@@ -15,6 +16,22 @@
       "filetypes": [
         "nix"
       ]
+    },
+    "lua2": {
+      "command": "/usr/bin/lua-language-server",
+      "filetypes": ["lua"],
+      "settings": {
+        "Lua": {
+          "diagnostics": {
+            "enable": true,
+            "globals": ["vim"],
+            "disable": ["lowercase-global"]
+          },
+          "telemetry": {
+            "enable": false
+          }
+        }
+      }
     },
     "haskell": {
       "command": "haskell-language-server-wrapper",

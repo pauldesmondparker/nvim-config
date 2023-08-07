@@ -1,6 +1,7 @@
 {
   "Apprentice": { "branch": "master", "commit": "59ad13661fa15edaf72c62218903c7817b5a3691" },
   "Colorizer": { "branch": "master", "commit": "715c91303f0f7a59b21af39c9d168d975ca2c831" },
+  "auto-pairs": { "branch": "master", "commit": "39f06b873a8449af8ff6a3eee716d3da14d63a76" },
   "coc.nvim": { "branch": "master", "commit": "eba04ac7df3a24902a689ad5710cd156bdd963b8" },
   "copilot.vim": { "branch": "release", "commit": "4a361e8cf327590d51d214c5c01c6391727390d7" },
   "hlchunk.nvim": { "branch": "main", "commit": "f7f2c866410f7ea805e0a2333ced6cb46b833f2a" },
@@ -23,6 +24,7 @@
   "vim-gutentags": { "branch": "master", "commit": "1337b1891b9d98d6f4881982f27aa22b02c80084" },
   "vim-highlightedyank": { "branch": "master", "commit": "fa3f57b097e9521ce41a66b6c7cf5d9adea70ea3" },
   "vim-http": { "branch": "master", "commit": "e642fb95754f7335244b941827c25f3d5d0bc415" },
+  "vim-illuminate": { "branch": "master", "commit": "5ed17582a8e97bf0a0c617c3cf762e98f87b9859" },
   "vim-numbertoggle": { "branch": "main", "commit": "075b7478777e694fbac330ee34a74590dad0fee1" },
   "vim-prisma": { "branch": "main", "commit": "95c5b25066efb34c75bce78698baa371fe0ee7c2" },
   "vim-sensible": { "branch": "master", "commit": "3e878abfd6ddc6fb5dba48b41f2b72c3a2f8249f" },

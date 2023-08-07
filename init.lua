@@ -1,7 +1,6 @@
 vim.api.nvim_command('set runtimepath^=~/.vim runtimepath+=~/.vim/after runtimepath+=~/.vim/ftplugin')
 vim.api.nvim_command('let &packpath = &runtimepath')
 
-
 vim.opt.ffs = "unix"
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
@@ -60,12 +59,17 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
     -- NonText ->  "eol", "extends", "precedes", "nbsp", "tab" and "trail"."
     vim.api.nvim_set_hl(0, "NonText", { ctermfg=28, fg="#008700" })
+    vim.api.nvim_set_hl(0, "IlluminatedWordText", { bold=true, bg="#3f4355" })
+    vim.api.nvim_set_hl(0, "IlluminatedWordRead", { bold=true, bg="#3f4355" })
+    vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bold=true, bg="#3f4355" })
+    vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bold=true, bg="#3f4355" })
+    vim.api.nvim_set_hl(0, "HighlightedyankRegion", { bold=true, bg="#3f6355" })
   end
 })
 vim.api.nvim_create_autocmd("ColorScheme", {
   pattern="apprentice",
   callback = function()
-    vim.api.nvim_set_hl(0, "CursorLineNr", { cterm=bold, bold=true })
+    vim.api.nvim_set_hl(0, "CursorLineNr", { bold=true })
     vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "LineNr", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "Pmenu", { bg = "NONE" })
@@ -73,9 +77,14 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "SignColumn", { ctermbg="NONE", bg="NONE" })
     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1f2335" })
     -- still doesn't appear to work
-    vim.api.nvim_set_hl(0, "FloatBorder", { fg = "white", bg = "#1f2335" })
+    vim.api.nvim_set_hl(0, "FloatBorder", { fg = "green", bg = "#1f2335" })
   end
 })
+
+vim.api.nvim_set_keymap("i", "<C-a>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+vim.g.copilot_no_tab_map = true
+vim.g.copilot_assume_mapped = true
+vim.g.copilot_tab_fallback = ""
 
 require("lazy").setup({
   "folke/which-key.nvim",
@@ -113,10 +122,28 @@ require("lazy").setup({
   { "neoclide/coc.nvim",
     branch = "master",
     build = "pnpm i",
+    config = function()
+      require("coc")
+    end
   },
   "rust-lang/rust.vim",
   { "itchyny/lightline.vim",
     config = function()
+
+      --[[ add  to branch display --]]
+      function _G.gitBranch()
+        return " " .. vim.fn["gitbranch#name"]()
+      end
+
+      --[[ add +1 ~2 -3 to status display --]]
+      function _G.gitStatus()
+        local hunk_summary = vim.fn['GitGutterGetHunkSummary']()
+        local a = hunk_summary[1]
+        local m = hunk_summary[2]
+        local r = hunk_summary[3]
+        return string.format('+%d ~%d -%d', a, m, r)
+      end
+
       vim.g.lightline = {
         -- powerlineish, rosepine, nord, ayu_light, seoul256, Tomorrow, materia, ayu_dark, Tomorrow_Night_Bright, PaperColor_light,
         -- default, powerline, 16color, Tomorrow_Night, selenized_white, molokai, Tomorrow_Night_Blue, selenized_light, Tomorrow_Night_Eighties,
@@ -136,8 +163,8 @@ require("lazy").setup({
           },
         },
         component_function = {
-          gitbranch = 'VimGitBranch',
-          gitstatus = 'GitStatus',
+          gitbranch = 'v:lua.gitBranch',
+          gitstatus = 'v:lua.gitStatus',
           cocstatus = 'coc#status',
         },
         component_expand = {
@@ -147,8 +174,8 @@ require("lazy").setup({
     end,
   },
   "machakann/vim-highlightedyank",
-  "SirVer/ultisnips",
-  "honza/vim-snippets",
+--  "SirVer/ultisnips",
+--  "honza/vim-snippets",
   "tpope/vim-sensible",
   "tpope/vim-fugitive",
   "othree/html5.vim",
@@ -165,7 +192,7 @@ require("lazy").setup({
       end
   },
   "prisma/vim-prisma",
-  "github/copilot.vim",
+  "github/copilot.vim", -- disabling of <TAB> done before here.
   "preservim/nerdtree",
   "preservim/tagbar",
   "ludovicchabant/vim-gutentags",
@@ -221,20 +248,85 @@ require("lazy").setup({
   "jeffkreeftmeijer/vim-numbertoggle",
   "airblade/vim-gitgutter",
   "itchyny/vim-gitbranch",
+  { "RRethy/vim-illuminate",
+    config = function()
+      require('illuminate').configure({
+        delay = 1000,
+      })
+    end
+  },
+  "jiangmiao/auto-pairs",
 })
 
---[[ function to add  to branch display --]]
-function _G.gitBranch()
-  return " " .. vim.fn["gitbranch#name"]()
-end
+--[[ add  to branch display --]]
+-- -function _G.gitBranch()
+-- -  return " " .. vim.fn["gitbranch#name"]()
+-- -end
+-- -
+-- -function _G.gitStatus()
+-- -  local hunk_summary = vim.fn['GitGutterGetHunkSummary']()
+-- -  local a = hunk_summary[1]
+-- -  local m = hunk_summary[2]
+-- -  local r = hunk_summary[3]
+-- -  return string.format('+%d ~%d -%d', a, m, r)
+-- -end
 
+-- Leaving these here for now, because https://github.com/itchyny/lightline.vim/issues/657
+-- The issue is that currently the NeoVim version of `exists()` doesn't work with Lua functions.
 --[[ Current kludge for gitBranch() --]]
-vim.api.nvim_exec(
-[[
-function! g:VimGitBranch()
-  return " " .. gitbranch#name()
-endfunction
-]],
-true)
+-- vim.api.nvim_exec(
+-- [[
+-- function! g:VimGitBranch()
+--   return " " .. gitbranch#name()
+-- endfunction
+-- function! GitStatus()
+--   let [a,m,r] = GitGutterGetHunkSummary()
+--   return printf('+%d ~%d -%d', a, m, r)
+-- endfunction
+-- ]],
+-- true)
 
-vim.api.nvim_command('source ~/.config/nvim/vimrc')
+-- Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
+-- - https://github.com/Valloric/YouCompleteMe
+-- - https://github.com/nvim-lua/completion-nvim
+-- vim.g.UltiSnipsExpandTrigger = "<c-l>"
+-- vim.g.UltiSnipsJumpForwardTrigger = "<c-l>"
+-- vim.g.UltiSnipsJumpBackwardTrigger = "<c-h>"
+
+-- --------------------------------------------
+-- vim-latex-live setup
+-- --------------------------------------------
+-- vim:g.livepreview_previewer = 'evince'
+-- vim.g:livepreview_engine = 'pdflatex'
+vim.g.livepreview_use_biber = 0
+
+-- --------------------------------------------
+-- Compiler callbacks (:checkhealth)
+-- --------------------------------------------
+vim.g.vimtex_compiler_progname = 'nvr'
+vim.g.python3_host_prog = '/usr/bin/python3'
+
+
+-- --------------------------------------------
+-- Convenience mappings
+-- --------------------------------------------
+vim.api.nvim_set_keymap('n', '<leader>n', '<CMD>noh <CR>', { noremap = false, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>l', '<CMD>lua print(vim.bo.filetype)<CR>', { noremap = false, silent = true })
+vim.api.nvim_set_keymap('i', 'jj', '<Esc>', {})
+vim.api.nvim_set_keymap('n', '<leader>nt', '<CMD>NERDTreeToggle<cr>', { silent = true, noremap = true })
+
+-- autocmd BufNewFile,BufRead *.rs set filetype=rust
+-- autocmd BufNewFile,BufRead *.nix set filetype=nix
+-- autocmd BufNewFile,BufRead *.sol set filetype=solidity
+-- autocmd BufNewFile,BufRead *.prisma set filetype=prisma
+vim.filetype.add({
+  extension = {
+    sol = "solidity",
+    rs = "rust",
+    nix = "nix",
+    prisma = "prisma",
+  }
+})
+
+require('mymodule')
+-- vim.api.nvim_command('source ~/.config/nvim/vimrc')

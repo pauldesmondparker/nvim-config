@@ -108,9 +108,9 @@
 " Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
 " - https://github.com/Valloric/YouCompleteMe
 " - https://github.com/nvim-lua/completion-nvim
-let g:UltiSnipsExpandTrigger="<c-l>"
-let g:UltiSnipsJumpForwardTrigger="<c-l>"
-let g:UltiSnipsJumpBackwardTrigger="<c-h>"
+" " let g:UltiSnipsExpandTrigger="<c-l>"
+" " let g:UltiSnipsJumpForwardTrigger="<c-l>"
+" " let g:UltiSnipsJumpBackwardTrigger="<c-h>"
 "let g:ycm_auto_trigger = 0
 
 " If you want :UltiSnipsEdit to split your window.
@@ -161,24 +161,24 @@ let g:UltiSnipsJumpBackwardTrigger="<c-h>"
 " --------------------------------------------
 " My mappings
 " --------------------------------------------
-nmap <leader>rc ciw<C-r>0<Esc>
-"ino ,<CR> <CR>,<Tab><Esc><lA
-ino {,<CR> {<CR><CR>}<Esc>>ki<Tab><Tab><Tab>
-ino {<CR> {<CR><CR>}<Esc>ki<Tab>
-ino {<Space> {  }<Left><Left>
-ino (<Space> (  )<Left><Left>
-ino [<Space> [  ]<Left><Left>
+" nmap <leader>rc ciw<C-r>0<Esc>
+" "ino ,<CR> <CR>,<Tab><Esc><lA
+" ino {,<CR> {<CR><CR>}<Esc>>ki<Tab><Tab><Tab>
+" ino {<CR> {<CR><CR>}<Esc>ki<Tab>
+" ino {<Space> {  }<Left><Left>
+" ino (<Space> (  )<Left><Left>
+" ino [<Space> [  ]<Left><Left>
 
 " --------------------------------------------
 " Convenience mappings
 " --------------------------------------------
-nmap <C-N> :noh <CR>
+" nmap <C-N> :noh <CR>
 " Use jj to get out of insert mode
-imap jj <Esc>
+" imap jj <Esc>
 " Remap Ctrl + Z to save, in all modes
-noremap <silent> <C-Z>      :update<CR>
+" noremap <silent> <C-Z>      :update<CR>
 " vnoremap <silent> <C-Z>     :<C-C>:update<CR>
-inoremap <silent> <C-Z>     <C-[>:update<CR>
+" inoremap <silent> <C-Z>     <C-[>:update<CR>
 " --------------------------------------------
 
 " --------------------------------------------
@@ -190,16 +190,16 @@ inoremap <silent> <C-Z>     <C-[>:update<CR>
 "nmap <c-l> 4l
 " --------------------------------------------
 
-filetype plugin indent on
-autocmd BufNewFile,BufRead *.rs set filetype=rust
-autocmd BufNewFile,BufRead *.nix set filetype=nix
-autocmd BufNewFile,BufRead *.sol set filetype=solidity
-autocmd BufNewFile,BufRead *.prisma set filetype=prisma
+" filetype plugin indent on
+" autocmd BufNewFile,BufRead *.rs set filetype=rust
+" autocmd BufNewFile,BufRead *.nix set filetype=nix
+" autocmd BufNewFile,BufRead *.sol set filetype=solidity
+" autocmd BufNewFile,BufRead *.prisma set filetype=prisma
 " --------------------------------------------
 " vim-latex-live setup
 " --------------------------------------------
 "let g:livepreview_previewer = 'evince'
-let g:livepreview_use_biber = 0
+" let g:livepreview_use_biber = 0
 "let g:livepreview_engine = 'pdflatex'
 " --------------------------------------------
 " Autocomplete setup
@@ -209,8 +209,8 @@ let g:livepreview_use_biber = 0
 " --------------------------------------------
 " Compiler callbacks (:checkhealth)
 " --------------------------------------------
-let g:vimtex_compiler_progname = 'nvr'
-let g:python3_host_prog = '/usr/bin/python3'
+" let g:vimtex_compiler_progname = 'nvr'
+" let g:python3_host_prog = '/usr/bin/python3'
 
 " --------------------------------------------
 " ALE setup
@@ -263,9 +263,6 @@ let g:python3_host_prog = '/usr/bin/python3'
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <silent><expr> <tab> pumvisible() ? "\<C-n>" : "\<tab>"
-
-"      \coc#refresh()
-
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
