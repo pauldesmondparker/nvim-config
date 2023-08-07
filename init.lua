@@ -149,7 +149,7 @@ require("lazy").setup({
         -- default, powerline, 16color, Tomorrow_Night, selenized_white, molokai, Tomorrow_Night_Blue, selenized_light, Tomorrow_Night_Eighties,
         -- PaperColor, selenized_black, wombat, one, PaperColor_dark, apprentice, deus, ayu_mirage, darcula, landscape, OldHope, jellybeans,
         -- material, solarized, srcery_drk, selenized_dark, simpleblack, dragoon
-        colorscheme = "dragoon",
+        colorscheme = "powerline_transparent",
         active = {
           left = {
             { "mode", "paste" },
@@ -256,6 +256,23 @@ require("lazy").setup({
     end
   },
   "jiangmiao/auto-pairs",
+  { "ggandor/leap.nvim",
+    config = function()
+      require('leap').add_default_mappings()
+    end
+  },
+--  {
+--  "roobert/tailwindcss-colorizer-cmp.nvim",
+--  -- optionally, override the default options:
+--    config = function()
+--      require("tailwindcss-colorizer-cmp").setup({
+--        color_square_width = 2,
+--      })
+--      require("cmp").config.formatting = {
+--        format = require("tailwindcss-colorizer-cmp").formatter
+--}
+--    end
+--  },
 })
 
 --[[ add  to branch display --]]
