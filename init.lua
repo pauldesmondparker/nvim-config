@@ -81,7 +81,8 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end
 })
 
-vim.api.nvim_set_keymap("i", "<C-a>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+vim.api.nvim_set_keymap("i", "<C-SPACE>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+
 vim.g.copilot_no_tab_map = true
 vim.g.copilot_assume_mapped = true
 vim.g.copilot_tab_fallback = ""
@@ -261,6 +262,14 @@ require("lazy").setup({
       require('leap').add_default_mappings()
     end
   },
+  {
+    'numToStr/Comment.nvim',
+    opts = {
+        -- add any options here
+    },
+    lazy = false,
+  },
+
 --  {
 --  "roobert/tailwindcss-colorizer-cmp.nvim",
 --  -- optionally, override the default options:
