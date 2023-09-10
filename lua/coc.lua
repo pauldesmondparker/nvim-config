@@ -93,10 +93,10 @@ local mappings = {
 	i = { -- Insert mode
         { "<TAB>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.check_back_space() ? "<TAB>" : coc#refresh()', opts },
         { "<S-TAB>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"]], opts },
+        {'<CR>', [[coc#pum#visible() ? coc#pum#confirm() : "\<CR>"]], opts},
 --        { "<C-SPACE>", 'coc#refresh()', { expr = true } },
         {'<C-F>', 'coc#float#has_scroll() ? coc#float#scroll(1) : "<Right>"', { expr = true, silent = true, nowait = true }},
         {'<C-B>', 'coc#float#has_scroll() ? coc#float#scroll(0) : "<Left>"', { expr = true, silent = true, nowait = true }},
-  --      {'<CR>',  'v:lua.MUtils.completion_confirm()', {expr = true, noremap = true}}
 	},
 	n = { -- Normal mode
         {'gh', '<CMD>lua _G.show_docs()<CR>', { silent = true } },

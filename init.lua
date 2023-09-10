@@ -55,26 +55,26 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = "," -- Make sure to set `mapleader` before lazy so your mappings are correct
 
 vim.api.nvim_create_autocmd("ColorScheme", {
-  pattern="*",
+  pattern = "*",
   callback = function()
     -- NonText ->  "eol", "extends", "precedes", "nbsp", "tab" and "trail"."
-    vim.api.nvim_set_hl(0, "NonText", { ctermfg=28, fg="#008700" })
-    vim.api.nvim_set_hl(0, "IlluminatedWordText", { bold=true, bg="#3f4355" })
-    vim.api.nvim_set_hl(0, "IlluminatedWordRead", { bold=true, bg="#3f4355" })
-    vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bold=true, bg="#3f4355" })
-    vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bold=true, bg="#3f4355" })
-    vim.api.nvim_set_hl(0, "HighlightedyankRegion", { bold=true, bg="#3f6355" })
+    vim.api.nvim_set_hl(0, "NonText", { ctermfg = 28, fg = "#008700" })
+    vim.api.nvim_set_hl(0, "IlluminatedWordText", { bold = true, bg = "#3f4355" })
+    vim.api.nvim_set_hl(0, "IlluminatedWordRead", { bold = true, bg = "#3f4355" })
+    vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bold = true, bg = "#3f4355" })
+    vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bold = true, bg = "#3f4355" })
+    vim.api.nvim_set_hl(0, "HighlightedyankRegion", { bold = true, bg = "#3f6355" })
   end
 })
 vim.api.nvim_create_autocmd("ColorScheme", {
-  pattern="apprentice",
+  pattern = "apprentice",
   callback = function()
-    vim.api.nvim_set_hl(0, "CursorLineNr", { bold=true })
+    vim.api.nvim_set_hl(0, "CursorLineNr", { bold = true })
     vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "LineNr", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "Pmenu", { bg = "NONE" })
-    vim.api.nvim_set_hl(0, "Normal", { ctermbg="NONE", bg="NONE" })
-    vim.api.nvim_set_hl(0, "SignColumn", { ctermbg="NONE", bg="NONE" })
+    vim.api.nvim_set_hl(0, "Normal", { ctermbg = "NONE", bg = "NONE" })
+    vim.api.nvim_set_hl(0, "SignColumn", { ctermbg = "NONE", bg = "NONE" })
     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1f2335" })
     -- still doesn't appear to work
     vim.api.nvim_set_hl(0, "FloatBorder", { fg = "green", bg = "#1f2335" })
@@ -89,48 +89,51 @@ vim.g.copilot_tab_fallback = ""
 
 require("lazy").setup({
   "folke/which-key.nvim",
---  { "folke/neoconf.nvim", cmd = "Neoconf" },
+  --  { "folke/neoconf.nvim", cmd = "Neoconf" },
   "folke/neodev.nvim",
-  { "shellRaining/hlchunk.nvim",
+  {
+    "shellRaining/hlchunk.nvim",
     event = { "UIEnter" },
     config = function()
       require("hlchunk").setup({
         indent = {
-            chars = { "│", "¦", "┆", "┊", }, -- more code can be found in https://unicodeplus.com/
-
-            style = {
-                "#150040",
-            },
+          chars = { "│", "¦", "┆", "┊", },
+          -- chars = { "│", "¦", "┆", "┊" }, -- more code can be found in https://unicodeplus.com/
+          style = {
+            "#150040",
+          },
         },
+        --  											blank = { enable = false },
         blank = {
-            enable = false,
-            style = {
-                "#6B0099",
-            },
-        }
+          chars = { "⁙", "⁘", "⁖", "⁚", "⸱" },
+          style = {
+            "#6B0099",
+          },
+        },
       })
     end
   },
   -- 'Shougo/vimproc.vim', { 'do': 'make' } "async execution
-  { "https://github.com/romainl/Apprentice.git",
-    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+  {
+    "https://github.com/romainl/Apprentice.git",
+    lazy = false,    -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
       -- load the colorscheme here
       vim.cmd([[colorscheme apprentice]])
     end,
   },
-  { "neoclide/coc.nvim",
-    branch = "master",
-    build = "pnpm i",
-    config = function()
-      require("coc")
-    end
-  },
+  -- { "neoclide/coc.nvim",
+  --   branch = "master",
+  --   build = "pnpm i",
+  --   config = function()
+  --     require("coc")
+  --   end
+  -- },
   "rust-lang/rust.vim",
-  { "itchyny/lightline.vim",
+  {
+    "itchyny/lightline.vim",
     config = function()
-
       --[[ add  to branch display --]]
       function _G.gitBranch()
         return " " .. vim.fn["gitbranch#name"]()
@@ -153,9 +156,11 @@ require("lazy").setup({
         colorscheme = "powerline_transparent",
         active = {
           left = {
-            { "mode", "paste" },
+            { "mode",     "paste" },
             { "readonly", "filename", "modified" },
-            { "gitbranch", "gitstatus", "cocstatus" },
+            { "gitbranch", "gitstatus" },
+            -- { "gitbranch", "gitstatus", "cocstatus" },
+            -- TODO: add https://github.com/linrongbin16/lsp-progress.nvim
           },
           right = {
             { "lineinfo" },
@@ -166,7 +171,7 @@ require("lazy").setup({
         component_function = {
           gitbranch = 'v:lua.gitBranch',
           gitstatus = 'v:lua.gitStatus',
-          cocstatus = 'coc#status',
+          -- cocstatus = 'coc#status',
         },
         component_expand = {
           filetype = "lightline#filetype",
@@ -175,22 +180,22 @@ require("lazy").setup({
     end,
   },
   "machakann/vim-highlightedyank",
---  "SirVer/ultisnips",
---  "honza/vim-snippets",
+  --  "SirVer/ultisnips",
+  --  "honza/vim-snippets",
   "tpope/vim-sensible",
   "tpope/vim-fugitive",
   "othree/html5.vim",
   "nicwest/vim-http",
   "chrisbra/Colorizer",
   {
-      'glacambre/firenvim',
-      -- Lazy load firenvim
-      -- Explanation: https://github.com/folke/lazy.nvim/discussions/463#discussioncomment-4819297
-      cond = not not vim.g.started_by_firenvim,
-      build = function()
-          require("lazy").load({ plugins = "firenvim", wait = true })
-          vim.fn["firenvim#install"](0)
-      end
+    'glacambre/firenvim',
+    -- Lazy load firenvim
+    -- Explanation: https://github.com/folke/lazy.nvim/discussions/463#discussioncomment-4819297
+    lazy = not vim.g.started_by_firenvim,
+    build = function()
+      -- require("lazy").load({ plugins = "firenvim", wait = true })
+      vim.fn["firenvim#install"](0)
+    end
   },
   "prisma/vim-prisma",
   "github/copilot.vim", -- disabling of <TAB> done before here.
@@ -198,8 +203,35 @@ require("lazy").setup({
   "preservim/tagbar",
   "ludovicchabant/vim-gutentags",
   {
-  'nvim-telescope/telescope.nvim', branch = '0.1.x',
-    dependencies = { 'nvim-lua/plenary.nvim' }
+    "nvim-telescope/telescope.nvim",
+    branch = '0.1.x',
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "debugloop/telescope-undo.nvim",
+    },
+    config = function()
+      require("telescope").setup({
+        extensions = {
+          undo = {
+            -- telescope-undo.nvim config, see below
+            side_by_side = true,
+            layout_strategy = "vertical",
+            layout_config = {
+              preview_height = 0.8,
+            },
+            mappings = {
+              i = {
+                ["<cr>"] = require("telescope-undo.actions").yank_additions,
+                ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
+                ["<C-cr>"] = require("telescope-undo.actions").restore,
+              },
+            },
+          },
+        },
+      })
+      require("telescope").load_extension("undo")
+      vim.keymap.set("n", "<leader>u", "<cmd>Telescope undo<cr>")
+    end,
   },
   {
     "nvim-treesitter/nvim-treesitter",
@@ -223,9 +255,11 @@ require("lazy").setup({
           "markdown",
           "markdown_inline",
           "python",
+          "proto",
           "query",
           "regex",
           "rust",
+          "solidity",
           "tsx",
           "typescript",
           "vim",
@@ -244,12 +278,117 @@ require("lazy").setup({
       }
     end
   },
+  "nvim-treesitter/nvim-treesitter-context",
+  {
+    "VonHeikemen/lsp-zero.nvim",
+    branch = "v2.x",
+    config = function()
+      -- This is where you modify the settings for lsp-zero
+      -- Note: autocompletion settings will not take effect
+      -- until you install the dependencies for them
+      -- see the dependencies section below
+      -- for more information
+      --
+
+      local lsp = require('lsp-zero').preset("recommended");
+      local lspsettings = require('lsp-zero.settings')
+      local lspconfig = require('lspconfig')
+      local mason = require('mason')
+      local masonlspconfig = require('mason-lspconfig')
+      local cmp = require('cmp')
+      local cmp_action = require('lsp-zero').cmp_action()
+      local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+      -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
+      local servers = {
+        'clangd',
+        'lua_ls',
+        'prismals',
+        'rust_analyzer',
+        'solidity_ls_nomicfoundation',
+        'tsserver',
+      }
+      for _, lsp_string in ipairs(servers) do
+        lspconfig[lsp_string].setup {
+          -- on_attach = my_custom_on_attach,
+          capabilities = capabilities,
+        }
+      end
+
+      require('symbols-outline').setup()
+      vim.api.nvim_set_keymap("n", "<leader>so", '<CMD>SymbolsOutline<CR>', { silent = true, noremap = true })
+
+      mason.setup({
+        ui = {
+          icons = {
+            package_installed = "✓",
+            package_pending = "➜",
+            package_uninstalled = "✗"
+          }
+        }
+      })
+      masonlspconfig.setup({})
+
+      lspsettings.preset()
+
+      -- (Optional) Configure lua language server for neovim
+      lspconfig.cmd = 'LspInfo'
+      lspconfig.event = { 'BufReadPre', 'BufNewFile' }
+      lspconfig.lua_ls.setup(lsp.nvim_lua_ls())
+
+      lsp.on_attach(function(client, bufnr)
+        -- see :help lsp-zero-keybindings
+        -- to learn the available actions
+        lsp.default_keymaps({ buffer = bufnr })
+      end)
+
+      lsp.setup()
+
+      cmp.setup({
+        mapping = {
+          -- `Enter` key to confirm completion
+          ['<CR>'] = cmp.mapping.confirm({ select = false }),
+          ['<TAB>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+          ['<S-TAB>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+
+          -- Ctrl+Space to trigger completion menu
+          -- ['<C-Space>'] = cmp.mapping.complete(),
+
+          -- Navigate between snippet placeholder
+          ['<C-f>'] = cmp_action.luasnip_jump_forward(),
+          ['<C-b>'] = cmp_action.luasnip_jump_backward(),
+        }
+      })
+    end,
+    dependencies = {
+      -- LSP Support
+      { "neovim/nvim-lspconfig" },
+      { 'williamboman/mason.nvim' },
+      { 'williamboman/mason-lspconfig.nvim' },
+
+      -- Autocompletion
+      { 'hrsh7th/nvim-cmp' },
+      { 'hrsh7th/cmp-buffer' },
+      { 'hrsh7th/cmp-path' },
+      { 'saadparwaiz1/cmp_luasnip' },  -- TODO: make sure this is working
+      { 'hrsh7th/cmp-nvim-lsp' },
+      { 'hrsh7th/cmp-nvim-lua' },
+
+      -- Snippets
+      { 'L3MON4D3/LuaSnip' },
+      { 'rafamadriz/friendly-snippets' },
+
+      -- Outline
+      { 'simrat39/symbols-outline.nvim' },
+    },
+  },
   "nvim-tree/nvim-web-devicons",
   "lambdalisue/suda.vim",
   "jeffkreeftmeijer/vim-numbertoggle",
   "airblade/vim-gitgutter",
   "itchyny/vim-gitbranch",
-  { "RRethy/vim-illuminate",
+  {
+    "RRethy/vim-illuminate",
     config = function()
       require('illuminate').configure({
         delay = 1000,
@@ -257,7 +396,8 @@ require("lazy").setup({
     end
   },
   "jiangmiao/auto-pairs",
-  { "ggandor/leap.nvim",
+  {
+    "ggandor/leap.nvim",
     config = function()
       require('leap').add_default_mappings()
     end
@@ -265,23 +405,34 @@ require("lazy").setup({
   {
     'numToStr/Comment.nvim',
     opts = {
-        -- add any options here
+      -- add any options here
     },
     lazy = false,
   },
-
---  {
---  "roobert/tailwindcss-colorizer-cmp.nvim",
---  -- optionally, override the default options:
---    config = function()
---      require("tailwindcss-colorizer-cmp").setup({
---        color_square_width = 2,
---      })
---      require("cmp").config.formatting = {
---        format = require("tailwindcss-colorizer-cmp").formatter
---}
---    end
---  },
+  {
+    'kevinhwang91/nvim-fundo',
+    dependencies = { 'kevinhwang91/promise-async' },
+    build = function()
+      require('fundo').install()
+    end,
+    config = function()
+      vim.o.undofile = true
+      require('fundo').setup()
+    end
+  },
+  {
+    "roobert/tailwindcss-colorizer-cmp.nvim",
+    -- TODO: Make sure this is working as expected
+    -- optionally, override the default options:
+    config = function()
+      require("tailwindcss-colorizer-cmp").setup({
+        color_square_width = 2,
+      })
+      require("cmp").config.formatting = {
+        format = require("tailwindcss-colorizer-cmp").formatter
+      }
+    end
+  },
 })
 
 --[[ add  to branch display --]]
