@@ -37,6 +37,9 @@ vim.opt.shortmess:append({ c = true })
 -- Always show the signcolumn
 vim.opt.signcolumn = "yes"
 
+-- Example using a list of specs with the default options
+vim.g.mapleader = "," -- Make sure to set `mapleader` before lazy so your mappings are correct
+
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -50,9 +53,6 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
-
--- Example using a list of specs with the default options
-vim.g.mapleader = "," -- Make sure to set `mapleader` before lazy so your mappings are correct
 
 vim.api.nvim_create_autocmd("ColorScheme", {
   pattern = "*",
@@ -80,12 +80,6 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "FloatBorder", { fg = "green", bg = "#1f2335" })
   end
 })
-
-vim.api.nvim_set_keymap("i", "<C-SPACE>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
-
-vim.g.copilot_no_tab_map = true
-vim.g.copilot_assume_mapped = true
-vim.g.copilot_tab_fallback = ""
 
 require("lazy").setup({
   "folke/which-key.nvim",
@@ -123,13 +117,6 @@ require("lazy").setup({
       vim.cmd([[colorscheme apprentice]])
     end,
   },
-  -- { "neoclide/coc.nvim",
-  --   branch = "master",
-  --   build = "pnpm i",
-  --   config = function()
-  --     require("coc")
-  --   end
-  -- },
   "rust-lang/rust.vim",
   {
     "itchyny/lightline.vim",
@@ -156,8 +143,8 @@ require("lazy").setup({
         colorscheme = "powerline_transparent",
         active = {
           left = {
-            { "mode",     "paste" },
-            { "readonly", "filename", "modified" },
+            { "mode",      "paste" },
+            { "readonly",  "filename", "modified" },
             { "gitbranch", "gitstatus" },
             -- { "gitbranch", "gitstatus", "cocstatus" },
             -- TODO: add https://github.com/linrongbin16/lsp-progress.nvim
@@ -198,7 +185,15 @@ require("lazy").setup({
     end
   },
   "prisma/vim-prisma",
-  "github/copilot.vim", -- disabling of <TAB> done before here.
+  {
+    "github/copilot.vim", -- disabling of <TAB> done before here.
+    config = function()
+      vim.api.nvim_set_keymap("i", "<C-SPACE>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+      vim.g.copilot_no_tab_map = true
+      vim.g.copilot_assume_mapped = true
+      vim.g.copilot_tab_fallback = ""
+    end,
+  },
   "preservim/nerdtree",
   "preservim/tagbar",
   "ludovicchabant/vim-gutentags",
@@ -293,6 +288,7 @@ require("lazy").setup({
       local lsp = require('lsp-zero').preset("recommended");
       local lspsettings = require('lsp-zero.settings')
       local lspconfig = require('lspconfig')
+      local lspsaga = require('lspsaga')
       local mason = require('mason')
       local masonlspconfig = require('mason-lspconfig')
       local cmp = require('cmp')
@@ -302,22 +298,71 @@ require("lazy").setup({
       -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
       local servers = {
         'clangd',
+--        'efm',
         'lua_ls',
         'prismals',
         'rust_analyzer',
-        'solidity_ls_nomicfoundation',
+        'solidity',
         'tsserver',
       }
       for _, lsp_string in ipairs(servers) do
-        lspconfig[lsp_string].setup {
-          -- on_attach = my_custom_on_attach,
+        local specific_setup = {
           capabilities = capabilities,
-        }
+          settings = {}
+        };
+        if lsp_string == 'solidity' then
+          specific_setup.settings = {
+            -- Forge remappings.
+            solidity = {
+              includePath = '',
+              remapping = {
+                ['ds-test/'] = 'lib/forge-std/lib/ds-test/src/',
+                ['forge-std/'] = 'lib/forge-std/src/',
+                ['./'] = 'src/',
+                ['@chainlink/contracts/'] = 'lib/chainlink-brownie-contracts/contracts/',
+              }
+            }
+          }
+        end
+ --       if lsp_string == 'efm' then
+ --         specific_setup.filetypes = { "solidity" }
+ --         specific_setup.init_options = { documentFormatting = true }
+ --         specific_setup.settings = {
+ --           languages = {
+ --             solidity = {
+ --               {
+ --                 lintStdin = true,
+ --                 lintIgnoreExitCode = true,
+ --                 lintCommand = "solhint stdin", -- default is `-f stylish`
+ --                 lintFormats = {
+ --                   " %#%l:%c %#%tarning %#%m",
+ --                   " %#%l:%c %#%trror %#%m",
+ --                   " %#%l:%c %#%tote %#%m",
+ --                   " %#%l:%c %m",
+ --                 },
+ --                 lintSource = "solhint",
+ --               }
+ --             }
+ --           }
+ --         }
+ --       end
+        lspconfig[lsp_string].setup(specific_setup)
       end
+
+      require('lint').linters_by_ft = {
+        solidity = { 'solhint' },
+      }
+      vim.api.nvim_create_autocmd({"BufEnter", "TextChanged", "InsertLeave"}, {
+        pattern = {"*.sol",},
+        callback = function()
+          require("lint").try_lint()
+        end,
+      })
 
       require('symbols-outline').setup()
       vim.api.nvim_set_keymap("n", "<leader>so", '<CMD>SymbolsOutline<CR>', { silent = true, noremap = true })
 
+      -- Setup Mason as early as possible
       mason.setup({
         ui = {
           icons = {
@@ -327,7 +372,25 @@ require("lazy").setup({
           }
         }
       })
-      masonlspconfig.setup({})
+      -- This uses Mason's Lua API to install LSPs if they are not already installed
+      masonlspconfig.setup()
+      masonlspconfig.setup({
+        ensure_installed = {
+--          "efm",
+          "solidity",
+        },
+      })
+      -- This uses Mason's Lua API to install packages if they are not already installed
+      -- This occurs after solhint is configured, so you'll need to restart neovim
+      local registry = require("mason-registry")
+      for _, pkg_name in ipairs { "solhint", } do
+        local ok, pkg = pcall(registry.get_package, pkg_name)
+        if ok then
+          if not pkg:is_installed() then
+             pkg:install()
+          end
+        end
+      end
 
       lspsettings.preset()
 
@@ -359,20 +422,26 @@ require("lazy").setup({
           ['<C-b>'] = cmp_action.luasnip_jump_backward(),
         }
       })
+
+      lspsaga.setup({})
     end,
     dependencies = {
       -- LSP Support
       { "neovim/nvim-lspconfig" },
       { 'williamboman/mason.nvim' },
       { 'williamboman/mason-lspconfig.nvim' },
+      { 'glepnir/lspsaga.nvim' },
 
       -- Autocompletion
       { 'hrsh7th/nvim-cmp' },
       { 'hrsh7th/cmp-buffer' },
       { 'hrsh7th/cmp-path' },
-      { 'saadparwaiz1/cmp_luasnip' },  -- TODO: make sure this is working
+      { 'saadparwaiz1/cmp_luasnip' }, -- TODO: make sure this is working
       { 'hrsh7th/cmp-nvim-lsp' },
       { 'hrsh7th/cmp-nvim-lua' },
+
+      -- Linter
+      { 'mfussenegger/nvim-lint' },
 
       -- Snippets
       { 'L3MON4D3/LuaSnip' },
