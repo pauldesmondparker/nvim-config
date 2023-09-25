@@ -349,15 +349,34 @@ require("lazy").setup({
         lspconfig[lsp_string].setup(specific_setup)
       end
 
+      -- local pattern = '(%d+):(%d+)%s+(%w+)%s+(.-)%s+(%S+)$'
+      -- local groups = { 'lnum', 'col', 'severity', 'message', 'code' }
+      -- local severity_map = {
+      --   ['error'] = vim.diagnostic.severity.ERROR,
+      --   ['warning'] = vim.diagnostic.severity.WARN,
+      -- }
+--       require('lint').linters.solhint = {
+--         cmd = 'solhint',
+--         stdin = true, -- or false if it doesn't support content input via stdin. In that case the filename is automatically added to the arguments.
+--         args = { 'stdin' },
+-- --        append_fname = true,
+-- --        stream = nil,
+--         ignore_exitcode = true, -- set this to true if the linter exits with a code != 0 and that's considered normal.
+--         parser = require('lint.parser').from_pattern(pattern, groups, severity_map, {
+--           ['source'] = 'solhint'
+--         }),
+--       }
       require('lint').linters_by_ft = {
         solidity = { 'solhint' },
       }
+
       vim.api.nvim_create_autocmd({"BufEnter", "TextChanged", "InsertLeave"}, {
         pattern = {"*.sol",},
         callback = function()
           require("lint").try_lint()
         end,
       })
+      vim.api.nvim_set_keymap("n", "<leader>nl", '<CMD>lua require("lint").try_lint()<CR>', { silent = true, noremap = true })
 
       require('symbols-outline').setup()
       vim.api.nvim_set_keymap("n", "<leader>so", '<CMD>SymbolsOutline<CR>', { silent = true, noremap = true })
@@ -373,7 +392,6 @@ require("lazy").setup({
         }
       })
       -- This uses Mason's Lua API to install LSPs if they are not already installed
-      masonlspconfig.setup()
       masonlspconfig.setup({
         ensure_installed = {
 --          "efm",
