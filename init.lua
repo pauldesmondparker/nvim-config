@@ -82,9 +82,9 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 require("lazy").setup({
-  "folke/which-key.nvim",
+--*--  "folke/which-key.nvim",
   --  { "folke/neoconf.nvim", cmd = "Neoconf" },
-  "folke/neodev.nvim",
+--*--   "folke/neodev.nvim",
   {
     "shellRaining/hlchunk.nvim",
     event = { "UIEnter" },
@@ -117,7 +117,7 @@ require("lazy").setup({
       vim.cmd([[colorscheme apprentice]])
     end,
   },
-  "rust-lang/rust.vim",
+--*--  "rust-lang/rust.vim",
   {
     "itchyny/lightline.vim",
     config = function()
@@ -171,8 +171,8 @@ require("lazy").setup({
   --  "honza/vim-snippets",
   "tpope/vim-sensible",
   "tpope/vim-fugitive",
-  "othree/html5.vim",
-  "nicwest/vim-http",
+--*--  "othree/html5.vim",
+--*--  "nicwest/vim-http",
   "chrisbra/Colorizer",
   {
     'glacambre/firenvim',
@@ -184,14 +184,12 @@ require("lazy").setup({
       vim.fn["firenvim#install"](0)
     end
   },
-  "prisma/vim-prisma",
+--*--  "prisma/vim-prisma",
   {
     "github/copilot.vim", -- disabling of <TAB> done before here.
     config = function()
       vim.api.nvim_set_keymap("i", "<C-SPACE>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
       vim.g.copilot_no_tab_map = true
-      vim.g.copilot_assume_mapped = true
-      vim.g.copilot_tab_fallback = ""
     end,
   },
   "preservim/nerdtree",
@@ -238,6 +236,7 @@ require("lazy").setup({
         ensure_installed = {
           "bash",
           "c",
+          "groovy",
           "haskell",
           "html",
           "java",
@@ -288,17 +287,20 @@ require("lazy").setup({
       local lsp = require('lsp-zero').preset("recommended");
       local lspsettings = require('lsp-zero.settings')
       local lspconfig = require('lspconfig')
-      local lspsaga = require('lspsaga')
+      -- local lspsaga = require('lspsaga')
       local mason = require('mason')
       local masonlspconfig = require('mason-lspconfig')
       local cmp = require('cmp')
       local cmp_action = require('lsp-zero').cmp_action()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local colorizer = require("colorizer")
+      local tailwindcss_colorizer_cmp = require("tailwindcss-colorizer-cmp")
 
       -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
       local servers = {
         'clangd',
 --        'efm',
+        'jdtls',
         'lua_ls',
         'prismals',
         'rust_analyzer',
@@ -368,10 +370,12 @@ require("lazy").setup({
 --       }
       require('lint').linters_by_ft = {
         solidity = { 'solhint' },
+        typescript = { 'eslint' },
+        typescriptreact = { 'eslint' },
       }
 
       vim.api.nvim_create_autocmd({"BufEnter", "TextChanged", "InsertLeave"}, {
-        pattern = {"*.sol",},
+        pattern = {"*.sol", "*.ts", "*.tsx"},
         callback = function()
           require("lint").try_lint()
         end,
@@ -422,9 +426,22 @@ require("lazy").setup({
         -- to learn the available actions
         lsp.default_keymaps({ buffer = bufnr })
       end)
-
+ 
       lsp.setup()
-
+      -- better setup: https://www.youtube.com/watch?v=_NiWhZeR-MY&t=43s
+      colorizer.setup({
+        user_default_options = {
+          tailwind = true,
+        },
+      })
+      -- TODO: Make sure this is working as expected
+      -- optionally, override the default options:
+      tailwindcss_colorizer_cmp.setup({
+        color_square_width = 2,
+      })
+      cmp.formatting = {
+        format = tailwindcss_colorizer_cmp.formatter
+      }
       cmp.setup({
         mapping = {
           -- `Enter` key to confirm completion
@@ -438,17 +455,24 @@ require("lazy").setup({
           -- Navigate between snippet placeholder
           ['<C-f>'] = cmp_action.luasnip_jump_forward(),
           ['<C-b>'] = cmp_action.luasnip_jump_backward(),
-        }
+        },
+        sources = {
+          { name = 'codeium' },
+          { name = 'nvim_lsp' },
+          { name = 'nvim_lua' },
+          { name = 'buffer' },
+          { name = 'path' },
+        },
       })
 
-      lspsaga.setup({})
+      -- lspsaga.setup({})
     end,
     dependencies = {
       -- LSP Support
       { "neovim/nvim-lspconfig" },
       { 'williamboman/mason.nvim' },
       { 'williamboman/mason-lspconfig.nvim' },
-      { 'glepnir/lspsaga.nvim' },
+      -- { 'glepnir/lspsaga.nvim' },
 
       -- Autocompletion
       { 'hrsh7th/nvim-cmp' },
@@ -467,6 +491,9 @@ require("lazy").setup({
 
       -- Outline
       { 'simrat39/symbols-outline.nvim' },
+
+      { 'NvChad/nvim-colorizer.lua' },
+      { 'roobert/tailwindcss-colorizer-cmp.nvim' },
     },
   },
   "nvim-tree/nvim-web-devicons",
@@ -482,7 +509,7 @@ require("lazy").setup({
       })
     end
   },
-  "jiangmiao/auto-pairs",
+ --*-- "jiangmiao/auto-pairs",
   {
     "ggandor/leap.nvim",
     config = function()
@@ -497,6 +524,34 @@ require("lazy").setup({
     lazy = false,
   },
   {
+    "simrat39/rust-tools.nvim",
+    dependencies = { 'kevinhwang91/promise-async' },
+    config = function()
+      local rt = require('rust-tools')
+      rt.setup({
+        tools = {
+          autoSetHints = true,
+          runnables = {
+            use_telescope = true
+          },
+          inlay_hints = {
+            show_parameter_hints = true,
+            parameter_hints_prefix = "<- ",
+            other_hints_prefix = "=> ",
+          },
+        },
+        server = {
+          on_attach = function(_, bufnr)
+            -- Hover actions
+            vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+            -- Code action groups
+            vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+          end,
+        },
+      })
+    end,
+  },
+  {
     'kevinhwang91/nvim-fundo',
     dependencies = { 'kevinhwang91/promise-async' },
     build = function()
@@ -508,18 +563,39 @@ require("lazy").setup({
     end
   },
   {
-    "roobert/tailwindcss-colorizer-cmp.nvim",
-    -- TODO: Make sure this is working as expected
-    -- optionally, override the default options:
+    "Exafunction/codeium.nvim",
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        "hrsh7th/nvim-cmp",
+    },
     config = function()
-      require("tailwindcss-colorizer-cmp").setup({
-        color_square_width = 2,
-      })
-      require("cmp").config.formatting = {
-        format = require("tailwindcss-colorizer-cmp").formatter
-      }
+        require("codeium").setup({
+        })
     end
   },
+  -- {
+  -- "jackMort/ChatGPT.nvim",
+  --   event = "VeryLazy",
+  --   config = function()
+  --     require("chatgpt").setup({
+  --       -- api_key_cmd = "echo 'spoofmebaby' | gpg --batch --decrypt --passphrase-fd 0 " .. vim.fn.expand("$HOME") .. "/.config/nvim/chatgpt-api-key.gpg 2> /dev/null"
+  --       api_key_cmd = "echo $CHATGPT_API_KEY"
+  --     })
+  --   end,
+  --   dependencies = {
+  --     "MunifTanjim/nui.nvim",
+  --     "nvim-lua/plenary.nvim",
+  --     "nvim-telescope/telescope.nvim"
+  --   }
+  -- },
+  {
+    "j-hui/fidget.nvim",
+    tag = "legacy",
+    event = "LspAttach",
+    opts = {
+      -- options
+    },
+  }
 })
 
 --[[ add  to branch display --]]
@@ -578,6 +654,7 @@ vim.api.nvim_set_keymap('n', '<leader>n', '<CMD>noh <CR>', { noremap = false, si
 vim.api.nvim_set_keymap('n', '<leader>l', '<CMD>lua print(vim.bo.filetype)<CR>', { noremap = false, silent = true })
 vim.api.nvim_set_keymap('i', 'jj', '<Esc>', {})
 vim.api.nvim_set_keymap('n', '<leader>nt', '<CMD>NERDTreeToggle<cr>', { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>md', '<CMD>w !pandoc | bcat -b firefox<cr>', { silent = true, noremap = true })
 
 -- autocmd BufNewFile,BufRead *.rs set filetype=rust
 -- autocmd BufNewFile,BufRead *.nix set filetype=nix
