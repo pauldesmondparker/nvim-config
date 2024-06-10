@@ -1,6 +1,19 @@
 vim.api.nvim_command('set runtimepath^=~/.vim runtimepath+=~/.vim/after runtimepath+=~/.vim/ftplugin')
 vim.api.nvim_command('let &packpath = &runtimepath')
 
+-- Conceal paswords and secrets
+local conceal_secrets_group = vim.api.nvim_create_augroup("ConcealSecretsGroup", {})
+vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter" }, {
+    group = conceal_secrets_group,
+    callback = function()
+        -- vim.cmd.syntax([[match SecretKeyChars /.\ze\_./ conceal contained cchar=*]])
+        -- vim.cmd.syntax([[match SecretKeys /\(^.*_KEY=\)\@<=.*$/ contains=SecretKeyChars]])
+        vim.fn.matchadd('Conceal', '\\(KEY=.*\\)\\@<=.', 10, -1, {conceal = '*'})
+    end,
+})
+vim.opt.conceallevel = 2
+vim.opt.concealcursor = "nv"
+
 vim.opt.ffs = "unix"
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
@@ -39,7 +52,6 @@ vim.opt.signcolumn = "yes"
 
 -- Example using a list of specs with the default options
 vim.g.mapleader = "," -- Make sure to set `mapleader` before lazy so your mappings are correct
-
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -80,11 +92,19 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "FloatBorder", { fg = "green", bg = "#1f2335" })
   end
 })
+-- highlight on yank
+local highlight_yank_group = vim.api.nvim_create_augroup("HighlightYankGroup", {})
+vim.api.nvim_create_autocmd("TextYankPost", {
+    group = highlight_yank_group,
+    callback = function()
+        vim.highlight.on_yank({ higroup = "HighlightedyankRegion", timeout = 1000 })
+    end,
+})
 
 require("lazy").setup({
---*--  "folke/which-key.nvim",
+  --*--  "folke/which-key.nvim",
   --  { "folke/neoconf.nvim", cmd = "Neoconf" },
---*--   "folke/neodev.nvim",
+  --*--   "folke/neodev.nvim",
   {
     "shellRaining/hlchunk.nvim",
     event = { "UIEnter" },
@@ -117,7 +137,7 @@ require("lazy").setup({
       vim.cmd([[colorscheme apprentice]])
     end,
   },
---*--  "rust-lang/rust.vim",
+  --*--  "rust-lang/rust.vim",
   {
     "itchyny/lightline.vim",
     config = function()
@@ -166,14 +186,14 @@ require("lazy").setup({
       }
     end,
   },
-  "machakann/vim-highlightedyank",
+--   "machakann/vim-highlightedyank",
   --  "SirVer/ultisnips",
   --  "honza/vim-snippets",
   "tpope/vim-sensible",
   "tpope/vim-fugitive",
---*--  "othree/html5.vim",
---*--  "nicwest/vim-http",
-  "chrisbra/Colorizer",
+  --*--  "othree/html5.vim",
+  --*--  "nicwest/vim-http",
+  -- "chrisbra/Colorizer",
   {
     'glacambre/firenvim',
     -- Lazy load firenvim
@@ -184,7 +204,7 @@ require("lazy").setup({
       vim.fn["firenvim#install"](0)
     end
   },
---*--  "prisma/vim-prisma",
+  --*--  "prisma/vim-prisma",
   {
     "github/copilot.vim", -- disabling of <TAB> done before here.
     config = function()
@@ -194,7 +214,12 @@ require("lazy").setup({
   },
   "preservim/nerdtree",
   "preservim/tagbar",
-  "ludovicchabant/vim-gutentags",
+  -- {
+  --   "ludovicchabant/vim-gutentags",
+  --   config = function()
+  --     vim.g.gutentags_generate_on_new = 0
+  --   end
+  -- },
   {
     "nvim-telescope/telescope.nvim",
     branch = '0.1.x',
@@ -299,7 +324,7 @@ require("lazy").setup({
       -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
       local servers = {
         'clangd',
---        'efm',
+        --        'efm',
         'jdtls',
         'lua_ls',
         'prismals',
@@ -326,28 +351,28 @@ require("lazy").setup({
             }
           }
         end
- --       if lsp_string == 'efm' then
- --         specific_setup.filetypes = { "solidity" }
- --         specific_setup.init_options = { documentFormatting = true }
- --         specific_setup.settings = {
- --           languages = {
- --             solidity = {
- --               {
- --                 lintStdin = true,
- --                 lintIgnoreExitCode = true,
- --                 lintCommand = "solhint stdin", -- default is `-f stylish`
- --                 lintFormats = {
- --                   " %#%l:%c %#%tarning %#%m",
- --                   " %#%l:%c %#%trror %#%m",
- --                   " %#%l:%c %#%tote %#%m",
- --                   " %#%l:%c %m",
- --                 },
- --                 lintSource = "solhint",
- --               }
- --             }
- --           }
- --         }
- --       end
+        --       if lsp_string == 'efm' then
+        --         specific_setup.filetypes = { "solidity" }
+        --         specific_setup.init_options = { documentFormatting = true }
+        --         specific_setup.settings = {
+        --           languages = {
+        --             solidity = {
+        --               {
+        --                 lintStdin = true,
+        --                 lintIgnoreExitCode = true,
+        --                 lintCommand = "solhint stdin", -- default is `-f stylish`
+        --                 lintFormats = {
+        --                   " %#%l:%c %#%tarning %#%m",
+        --                   " %#%l:%c %#%trror %#%m",
+        --                   " %#%l:%c %#%tote %#%m",
+        --                   " %#%l:%c %m",
+        --                 },
+        --                 lintSource = "solhint",
+        --               }
+        --             }
+        --           }
+        --         }
+        --       end
         lspconfig[lsp_string].setup(specific_setup)
       end
 
@@ -357,30 +382,31 @@ require("lazy").setup({
       --   ['error'] = vim.diagnostic.severity.ERROR,
       --   ['warning'] = vim.diagnostic.severity.WARN,
       -- }
---       require('lint').linters.solhint = {
---         cmd = 'solhint',
---         stdin = true, -- or false if it doesn't support content input via stdin. In that case the filename is automatically added to the arguments.
---         args = { 'stdin' },
--- --        append_fname = true,
--- --        stream = nil,
---         ignore_exitcode = true, -- set this to true if the linter exits with a code != 0 and that's considered normal.
---         parser = require('lint.parser').from_pattern(pattern, groups, severity_map, {
---           ['source'] = 'solhint'
---         }),
---       }
+      --       require('lint').linters.solhint = {
+      --         cmd = 'solhint',
+      --         stdin = true, -- or false if it doesn't support content input via stdin. In that case the filename is automatically added to the arguments.
+      --         args = { 'stdin' },
+      -- --        append_fname = true,
+      -- --        stream = nil,
+      --         ignore_exitcode = true, -- set this to true if the linter exits with a code != 0 and that's considered normal.
+      --         parser = require('lint.parser').from_pattern(pattern, groups, severity_map, {
+      --           ['source'] = 'solhint'
+      --         }),
+      --       }
       require('lint').linters_by_ft = {
         solidity = { 'solhint' },
         typescript = { 'eslint' },
-        typescriptreact = { 'eslint' },
+        -- typescriptreact = { 'eslint' },
       }
 
-      vim.api.nvim_create_autocmd({"BufEnter", "TextChanged", "InsertLeave"}, {
-        pattern = {"*.sol", "*.ts", "*.tsx"},
+      vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "InsertLeave" }, {
+        pattern = { "*.sol", "*.ts", "*.tsx" },
         callback = function()
           require("lint").try_lint()
         end,
       })
-      vim.api.nvim_set_keymap("n", "<leader>nl", '<CMD>lua require("lint").try_lint()<CR>', { silent = true, noremap = true })
+      vim.api.nvim_set_keymap("n", "<leader>nl", '<CMD>lua require("lint").try_lint()<CR>',
+        { silent = true, noremap = true })
 
       require('symbols-outline').setup()
       vim.api.nvim_set_keymap("n", "<leader>so", '<CMD>SymbolsOutline<CR>', { silent = true, noremap = true })
@@ -398,7 +424,7 @@ require("lazy").setup({
       -- This uses Mason's Lua API to install LSPs if they are not already installed
       masonlspconfig.setup({
         ensure_installed = {
---          "efm",
+          --          "efm",
           "solidity",
         },
       })
@@ -409,7 +435,7 @@ require("lazy").setup({
         local ok, pkg = pcall(registry.get_package, pkg_name)
         if ok then
           if not pkg:is_installed() then
-             pkg:install()
+            pkg:install()
           end
         end
       end
@@ -425,12 +451,17 @@ require("lazy").setup({
         -- see :help lsp-zero-keybindings
         -- to learn the available actions
         lsp.default_keymaps({ buffer = bufnr })
+        vim.keymap.set("n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<cr>", {buffer = bufnr})
+        vim.keymap.set("n", "<leader>dq", "<cmd>lua vim.diagnostic.setloclist()<cr>", {buffer = bufnr})
+
+        vim.keymap.del('n', '<F4>', {buffer = bufnr})
       end)
- 
+
       lsp.setup()
       -- better setup: https://www.youtube.com/watch?v=_NiWhZeR-MY&t=43s
       colorizer.setup({
         user_default_options = {
+          rgb_fn = true, -- CSS rgb() and rgba() functions
           tailwind = true,
         },
       })
@@ -439,9 +470,13 @@ require("lazy").setup({
       tailwindcss_colorizer_cmp.setup({
         color_square_width = 2,
       })
-      cmp.formatting = {
-        format = tailwindcss_colorizer_cmp.formatter
-      }
+      cmp.opts = function(_, opts)
+        local format_kinds = opts.formatting.format
+        opts.formatting.format = function(entry, item)
+          format_kinds(entry, item)
+          return tailwindcss_colorizer_cmp.formatter(entry, item)
+        end
+      end
       cmp.setup({
         mapping = {
           -- `Enter` key to confirm completion
@@ -458,6 +493,7 @@ require("lazy").setup({
         },
         sources = {
           { name = 'codeium' },
+          { name = 'tailwindcss-colorizer-cmp' },
           { name = 'nvim_lsp' },
           { name = 'nvim_lua' },
           { name = 'buffer' },
@@ -493,7 +529,7 @@ require("lazy").setup({
       { 'simrat39/symbols-outline.nvim' },
 
       { 'NvChad/nvim-colorizer.lua' },
-      { 'roobert/tailwindcss-colorizer-cmp.nvim' },
+      { 'roobert/tailwindcss-colorizer-cmp.nvim', config = true },
     },
   },
   "nvim-tree/nvim-web-devicons",
@@ -509,7 +545,7 @@ require("lazy").setup({
       })
     end
   },
- --*-- "jiangmiao/auto-pairs",
+  --*-- "jiangmiao/auto-pairs",
   {
     "ggandor/leap.nvim",
     config = function()
@@ -565,12 +601,12 @@ require("lazy").setup({
   {
     "Exafunction/codeium.nvim",
     dependencies = {
-        "nvim-lua/plenary.nvim",
-        "hrsh7th/nvim-cmp",
+      "nvim-lua/plenary.nvim",
+      "hrsh7th/nvim-cmp",
     },
     config = function()
-        require("codeium").setup({
-        })
+      require("codeium").setup({
+      })
     end
   },
   -- {
@@ -595,6 +631,13 @@ require("lazy").setup({
     opts = {
       -- options
     },
+  },
+  "sukima/xmledit",
+  {
+    "jbyuki/instant.nvim",
+    config = function()
+      vim.g.instant_username = "sunwukong"
+    end
   }
 })
 
