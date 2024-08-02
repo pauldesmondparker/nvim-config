@@ -278,7 +278,7 @@ require("lazy").setup({
           "query",
           "regex",
           "rust",
-          "solidity",
+          "solang",
           "tsx",
           "typescript",
           "vim",
@@ -329,27 +329,31 @@ require("lazy").setup({
         'lua_ls',
         'prismals',
         'rust_analyzer',
-        'solidity',
+        'solang',
         'tsserver',
+        'hls',
       }
       for _, lsp_string in ipairs(servers) do
         local specific_setup = {
           capabilities = capabilities,
+          on_attach = lsp.on_attach,
           settings = {}
         };
-        if lsp_string == 'solidity' then
+        if lsp_string == 'solang' then
           specific_setup.settings = {
             -- Forge remappings.
-            solidity = {
+            solang = {
               includePath = '',
               remapping = {
                 ['ds-test/'] = 'lib/forge-std/lib/ds-test/src/',
                 ['forge-std/'] = 'lib/forge-std/src/',
                 ['./'] = 'src/',
                 ['@chainlink/contracts/'] = 'lib/chainlink-brownie-contracts/contracts/',
+                ['@OpenZeppelin/'] = 'OpenZeppelin/openzeppelin-contracts/',
               }
             }
           }
+          specific_setup.root_dir = lspconfig.util.root_pattern("hardhat.config.*", ".git")
         end
         --       if lsp_string == 'efm' then
         --         specific_setup.filetypes = { "solidity" }
