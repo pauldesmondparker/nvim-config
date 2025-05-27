@@ -8,6 +8,7 @@ Plugin.dependencies = {
 Plugin.opts = {
   highlight = {
     enable = true,
+    disable = { 'query', 'regex', 'rust' },
   },
   -- :help nvim-treesitter-textobjects-modules
   textobjects = {
@@ -23,16 +24,26 @@ Plugin.opts = {
     },
   },
   ensure_installed = {
+    'bash',
     'css',
+    'dockerfile',
+    'go',
     'javascript',
     'json',
     'lua',
+    'markdown',
+    'query',
+    'python',
+    'regex',
+    'rust',
     'solidity',
     'tsx',
     'typescript',
     'vim',
     'vimdoc',
+    'yaml',
   },
+  auto_install = true,
 }
 
 function Plugin.config(opts)

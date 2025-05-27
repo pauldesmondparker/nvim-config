@@ -52,6 +52,7 @@ function Plugin.config()
     Operator = "",
     TypeParameter = "",
     Copilot = "",
+    Augment = "",
   }
   -- See :help cmp-config
   cmp.setup({
@@ -61,6 +62,7 @@ function Plugin.config()
       end
     },
     sources = {
+      {name = 'augment'},
       {name = 'copilot'},
       {name = 'path'},
       {name = 'nvim_lsp'},
@@ -83,6 +85,7 @@ function Plugin.config()
           buffer = "[Buffer]",
           path = "[Path]",
           copilot = "[Copilot]",
+          augment = "[Aug]",
         })[entry.source.name]
         return vim_item
       end,

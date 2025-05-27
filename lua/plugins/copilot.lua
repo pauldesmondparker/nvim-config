@@ -21,7 +21,7 @@ function Plugin.config()
       keymap = {
         jump_prev = "[[",
         jump_next = "]]",
-        accept = "<C-SPACE>",
+        -- accept = "<C-SPACE>",
         refresh = "gr",
         open = "<M-CR>",
       },

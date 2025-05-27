@@ -5,6 +5,7 @@ Plugin.dependencies = {
   { 'hrsh7th/cmp-nvim-lsp' },
   { 'williamboman/mason-lspconfig.nvim' },
   { 'creativenull/efmls-configs-nvim' },
+  { 'prisma/vim-prisma' },
 }
 
 Plugin.cmd = { 'LspInfo', 'LspInstall', 'LspUnInstall' }
@@ -67,34 +68,61 @@ function Plugin.config()
       'eslint',
       'html',
       'lua_ls',
-      'tsserver',
+      'ts_ls',
+      'gopls',
     },
     handlers = {
       -- See :help mason-lspconfig-dynamic-server-setup
-      function(server)
-        -- See :help lspconfig-setup
-        lspconfig[server].setup({
-          capabilities = lsp_capabilities,
-        })
-      end,
-      ['tsserver'] = function()
-        lspconfig.tsserver.setup({
+      -- ['ts_ls'] = function()
+      --   lspconfig.ts_ls.setup({
+      --     capabilities = lsp_capabilities,
+      --     settings = {
+      --       completions = {
+      --         completeFunctionCalls = true
+      --       }
+      --     }
+      --   })
+      -- end,
+      ['lua_ls'] = function()
+        -- require('plugins.lsp.lua_ls')
+        lspconfig.lua_ls.setup({
           capabilities = lsp_capabilities,
           settings = {
-            completions = {
-              completeFunctionCalls = true
-            }
+            Lua = {
+              runtime = {
+                -- Tell the language server which version of Lua you're using
+                -- (most likely LuaJIT in the case of Neovim)
+                version = 'LuaJIT',
+              },
+              diagnostics = {
+                -- Get the language server to recognize the `vim` global
+                globals = {
+                  'vim',
+                  'require'
+                },
+              },
+              workspace = {
+                -- Make the server aware of Neovim runtime files
+                library = vim.api.nvim_get_runtime_file("", true),
+              },
+              -- Do not send telemetry data containing a randomized but unique identifier
+              telemetry = {
+                enable = false,
+              },
+            },
           }
         })
-      end,
-      ['lua_ls'] = function()
-        require('plugins.lsp.lua_ls')
       end,
       ['efm'] = function()
         local solhint = require("efmls-configs.linters.solhint")
         local prettier_d = require("efmls-configs.formatters.prettier_d")
+        local gofumpt = require("efmls-configs.formatters.gofumpt")
+        local go_revive = require("efmls-configs.linters.go_revive")
+        local python_ruff = require("efmls-configs.formatters.ruff")
+        local python_ruff_sort = require("efmls-configs.formatters.ruff_sort")
+        local python_ruff_lint = require("efmls-configs.linters.ruff")
         lspconfig.efm.setup({
-          filetypes = { "solidity", "typescriptreact", "typescript" },
+          filetypes = { "solidity", "typescriptreact", "typescript", "go", "python", },
           init_options = {
             documentFormatting = true,
             documentRangeFormatting = true,
@@ -106,9 +134,21 @@ function Plugin.config()
           settings = {
             languages = {
               solidity = { solhint, prettier_d },
+              javascript = { prettier_d },
+              javascriptreact = { prettier_d },
+              typescript = { prettier_d },
               typescriptreact = { prettier_d },
+              go = { gofumpt, go_revive },
+              python = { python_ruff, python_ruff_sort, python_ruff_lint },
             }
           }
+        })
+      end,
+      function(server)
+        -- See :help lspconfig-setup
+        lspconfig[server].setup({
+          capabilities = lsp_capabilities,
+          -- on_attach = on_attach,
         })
       end,
     }

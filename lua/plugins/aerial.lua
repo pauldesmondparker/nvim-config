@@ -2,6 +2,18 @@ local Plugin = {'stevearc/aerial.nvim'}
 
 function Plugin.config()
   require('aerial').setup({
+    filter_kind = false,
+    -- filter_kind = {
+    --   "Class",
+    --   "Constructor",
+    --   "Enum",
+    --   "Field",
+    --   "Function",
+    --   "Interface",
+    --   "Module",
+    --   "Method",
+    --   "Struct",
+    -- },
     -- optionally use on_attach to set keymaps when aerial has attached to a buffer
     on_attach = function(bufnr)
       -- Jump forwards/backwards with '{' and '}'
