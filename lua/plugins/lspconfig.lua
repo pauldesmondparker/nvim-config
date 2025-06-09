@@ -3,7 +3,11 @@ local user = {}
 
 Plugin.dependencies = {
   { 'hrsh7th/cmp-nvim-lsp' },
-  { 'williamboman/mason-lspconfig.nvim' },
+  -- { 'williamboman/mason-lspconfig.nvim' },
+  -- To be changed back once the PR has been merged:
+  -- https://github.com/mason-org/mason.nvim/pull/1640
+  { 'KingMichaelPark/mason.nvim', opts = { pip = { use_uv = true } } },
+  { 'KingMichaelPark/mason-lspconfig.nvim' },
   { 'creativenull/efmls-configs-nvim' },
   { 'prisma/vim-prisma' },
 }
@@ -62,14 +66,16 @@ function Plugin.config()
 
   -- See :help mason-lspconfig-settings
   require('mason-lspconfig').setup({
+    automatic_installation = true,
     ensure_installed = {
       'cssls',
       'efm',
       'eslint',
+      'gopls',
       'html',
       'lua_ls',
+      'pyright',
       'ts_ls',
-      'gopls',
     },
     handlers = {
       -- See :help mason-lspconfig-dynamic-server-setup
@@ -80,6 +86,24 @@ function Plugin.config()
       --       completions = {
       --         completeFunctionCalls = true
       --       }
+      --     }
+      --   })
+      -- end,
+      -- ['pyright'] = function()
+      --   lspconfig.pyright.setup({
+      --     capabilities = lsp_capabilities,
+      --     settings = {
+      --       pyright = {
+      --         venvPath = '.',
+      --         venv = '.venv',
+      --         disableOrganizeImports = true,
+      --         analysis = {
+      --           autoSearchPaths = true,
+      --           useLibraryCodeForTypes = true,
+      --           typeCheckingMode = 'basic',
+      --           diagnosticMode = 'workspace',
+      --         },
+      --       },
       --     }
       --   })
       -- end,
