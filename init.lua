@@ -12,7 +12,9 @@ else
   require('user.plugins')
 
   local status = pcall(vim.cmd.colorscheme, { 'apprentice' })
-  if status then
+  -- For some reason, status has stopped returning true.
+  -- vim.cmd.colorscheme('apprentice')
+  if true then
     vim.api.nvim_set_hl(0, "CursorLineNr", { bold = true })
     vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "LineNr", { bg = "NONE" })
