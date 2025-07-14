@@ -1,10 +1,10 @@
 -- ~/.config/nvim/lua/plugins/header.lua
-local Plugin = { 'sunwukonga/heading.nvim' }
--- local Plugin = {
---   name = 'sunwukonga/heading.nvim',
---   dir = '~/sandpit/neovim/heading.nvim/',
---   dev = true,
--- }
+-- local Plugin = { 'sunwukonga/heading.nvim' }
+
+local Plugin = {
+  -- name = 'sunwukonga/heading.nvim',
+  dir = '~/sandpit/neovim/heading.nvim/',
+}
 
 Plugin.keys = {
   -- lazy.nvim will call vim.keymap.set() for you

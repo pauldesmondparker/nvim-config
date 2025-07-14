@@ -10,7 +10,9 @@ local Plugins = {
   { 'joshdick/onedark.vim' },
   { 'tanvirtin/monokai.nvim' },
   { 'lunarvim/darkplus.nvim' },
-  { 'romainl/Apprentice',           lazy = false,  priority = 1000 },
+  -- { 'romainl/Apprentice',           lazy = false,  priority = 1000 },
+  { 'pauldesmondparker/Apprentice', branch='fix/neovim-unsupported-ctermul', lazy = false, priority = 1000 },
+  -- { name = 'romainl/Apprentice', dir = '~/sandpit/neovim/Apprentice/', dev = true, lazy = false, priority = 1000 },
 }
 
 return Plugins

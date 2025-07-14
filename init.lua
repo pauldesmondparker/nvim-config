@@ -14,7 +14,7 @@ else
   local status = pcall(vim.cmd.colorscheme, { 'apprentice' })
   -- For some reason, status has stopped returning true.
   -- vim.cmd.colorscheme('apprentice')
-  if true then
+  if status then
     vim.api.nvim_set_hl(0, "CursorLineNr", { bold = true })
     vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
     vim.api.nvim_set_hl(0, "LineNr", { bg = "NONE" })
