@@ -41,19 +41,10 @@ function Plugin.init()
     },
   })
 
-  vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-    vim.lsp.handlers.hover,
-    { border = 'rounded' }
-  )
-
-  vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-    vim.lsp.handlers.signature_help,
-    { border = 'rounded' }
-  )
+  vim.o.winborder = 'rounded'
 end
 
 function Plugin.config()
-  local lspconfig = require('lspconfig')
   local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
   local group = vim.api.nvim_create_augroup('lsp_cmds', { clear = true })
@@ -61,10 +52,13 @@ function Plugin.config()
   vim.api.nvim_create_autocmd('LspAttach', {
     group = group,
     desc = 'LSP actions',
-    callback = user.on_attach
+    callback = user.on_attach,
   })
 
-  -- See :help mason-lspconfig-settings
+  vim.lsp.config('*', {
+    capabilities = lsp_capabilities,
+  })
+
   require('mason-lspconfig').setup({
     automatic_installation = true,
     ensure_installed = {
@@ -77,105 +71,18 @@ function Plugin.config()
       'pyright',
       'ts_ls',
     },
-    handlers = {
-      -- See :help mason-lspconfig-dynamic-server-setup
-      -- ['ts_ls'] = function()
-      --   lspconfig.ts_ls.setup({
-      --     capabilities = lsp_capabilities,
-      --     settings = {
-      --       completions = {
-      --         completeFunctionCalls = true
-      --       }
-      --     }
-      --   })
-      -- end,
-      -- ['pyright'] = function()
-      --   lspconfig.pyright.setup({
-      --     capabilities = lsp_capabilities,
-      --     settings = {
-      --       pyright = {
-      --         venvPath = '.',
-      --         venv = '.venv',
-      --         disableOrganizeImports = true,
-      --         analysis = {
-      --           autoSearchPaths = true,
-      --           useLibraryCodeForTypes = true,
-      --           typeCheckingMode = 'basic',
-      --           diagnosticMode = 'workspace',
-      --         },
-      --       },
-      --     }
-      --   })
-      -- end,
-      ['lua_ls'] = function()
-        -- require('plugins.lsp.lua_ls')
-        lspconfig.lua_ls.setup({
-          capabilities = lsp_capabilities,
-          settings = {
-            Lua = {
-              runtime = {
-                -- Tell the language server which version of Lua you're using
-                -- (most likely LuaJIT in the case of Neovim)
-                version = 'LuaJIT',
-              },
-              diagnostics = {
-                -- Get the language server to recognize the `vim` global
-                globals = {
-                  'vim',
-                  'require'
-                },
-              },
-              workspace = {
-                -- Make the server aware of Neovim runtime files
-                library = vim.api.nvim_get_runtime_file("", true),
-              },
-              -- Do not send telemetry data containing a randomized but unique identifier
-              telemetry = {
-                enable = false,
-              },
-            },
-          }
-        })
-      end,
-      ['efm'] = function()
-        local solhint = require("efmls-configs.linters.solhint")
-        local prettier_d = require("efmls-configs.formatters.prettier_d")
-        local gofumpt = require("efmls-configs.formatters.gofumpt")
-        local go_revive = require("efmls-configs.linters.go_revive")
-        local python_ruff = require("efmls-configs.formatters.ruff")
-        local python_ruff_sort = require("efmls-configs.formatters.ruff_sort")
-        local python_ruff_lint = require("efmls-configs.linters.ruff")
-        lspconfig.efm.setup({
-          filetypes = { "solidity", "typescriptreact", "typescript", "go", "python", },
-          init_options = {
-            documentFormatting = true,
-            documentRangeFormatting = true,
-            hover = true,
-            documentSymbol = true,
-            codeAction = true,
-            completion = true,
-          },
-          settings = {
-            languages = {
-              solidity = { solhint, prettier_d },
-              javascript = { prettier_d },
-              javascriptreact = { prettier_d },
-              typescript = { prettier_d },
-              typescriptreact = { prettier_d },
-              go = { gofumpt, go_revive },
-              python = { python_ruff, python_ruff_sort, python_ruff_lint },
-            }
-          }
-        })
-      end,
-      function(server)
-        -- See :help lspconfig-setup
-        lspconfig[server].setup({
-          capabilities = lsp_capabilities,
-          -- on_attach = on_attach,
-        })
-      end,
-    }
+  })
+
+  vim.lsp.enable({
+    'cssls',
+    'efm',
+    'eslint',
+    'gopls',
+    'html',
+    'lua_ls',
+    'pyright',
+    'solidity',
+    'ts_ls',
   })
 end
 
