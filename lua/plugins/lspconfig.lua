@@ -12,8 +12,6 @@ Plugin.dependencies = {
   { 'prisma/vim-prisma' },
 }
 
-Plugin.cmd = { 'LspInfo', 'LspInstall', 'LspUnInstall' }
-
 Plugin.event = { 'BufReadPre', 'BufNewFile' }
 
 function Plugin.init()
